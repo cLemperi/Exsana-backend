@@ -65,10 +65,18 @@ class Formations
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $programmePedagoFile = null;
 
+    #[ORM\ManyToMany(targetEntity: UserFrom::class, mappedBy: 'formationRegistration')]
+    private Collection $userFroms;
+
+    #[ORM\OneToMany(mappedBy: 'formations', targetEntity: FormationsUser::class, orphanRemoval: true)]
+    private Collection $formationsUsers;
+
     public function __construct()
     {
         $this->programmeFormation = new ArrayCollection();
         $this->objectifFormation = new ArrayCollection();
+        $this->userFroms = new ArrayCollection();
+        $this->formationsUsers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -300,6 +308,63 @@ class Formations
     public function setProgrammePedagoFile(?string $programmePedagoFile): static
     {
         $this->programmePedagoFile = $programmePedagoFile;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserFrom>
+     */
+    public function getUserFroms(): Collection
+    {
+        return $this->userFroms;
+    }
+
+    public function addUserFrom(UserFrom $userFrom): static
+    {
+        if (!$this->userFroms->contains($userFrom)) {
+            $this->userFroms->add($userFrom);
+            $userFrom->addFormationRegistration($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserFrom(UserFrom $userFrom): static
+    {
+        if ($this->userFroms->removeElement($userFrom)) {
+            $userFrom->removeFormationRegistration($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FormationsUser>
+     */
+    public function getFormationsUsers(): Collection
+    {
+        return $this->formationsUsers;
+    }
+
+    public function addFormationsUser(FormationsUser $formationsUser): static
+    {
+        if (!$this->formationsUsers->contains($formationsUser)) {
+            $this->formationsUsers->add($formationsUser);
+            $formationsUser->setFormations($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFormationsUser(FormationsUser $formationsUser): static
+    {
+        if ($this->formationsUsers->removeElement($formationsUser)) {
+            // set the owning side to null (unless already changed)
+            if ($formationsUser->getFormations() === $this) {
+                $formationsUser->setFormations(null);
+            }
+        }
 
         return $this;
     }
