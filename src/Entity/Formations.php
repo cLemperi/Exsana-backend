@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\FormationsRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: FormationsRepository::class)]
 #[ApiResource]
@@ -44,10 +44,10 @@ class Formations
     #[ORM\ManyToOne(inversedBy: 'formations')]
     private ?Category $Category = null;
 
-    #[ORM\OneToMany(mappedBy: 'formations', targetEntity: ProgrammeFormation::class)]
+    #[ORM\OneToMany(mappedBy: 'formations', targetEntity: ProgrammeFormation::class, cascade: ['persist'])]
     private Collection $programmeFormation;
 
-    #[ORM\OneToMany(mappedBy: 'formations', targetEntity: ObjectifFormation::class)]
+    #[ORM\OneToMany(mappedBy: 'formations', targetEntity: ObjectifFormation::class, cascade: ['persist'])]
     private Collection $objectifFormation;
 
     #[ORM\Column(length: 255)]
@@ -73,6 +73,7 @@ class Formations
 
     public function __construct()
     {
+        $this->created_at = new \DateTimeImmutable();
         $this->programmeFormation = new ArrayCollection();
         $this->objectifFormation = new ArrayCollection();
         $this->userFroms = new ArrayCollection();

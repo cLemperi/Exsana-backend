@@ -19,7 +19,7 @@ class ObjectifFormation
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $content = null;
 
-    #[ORM\ManyToOne(inversedBy: 'objectifFormation')]
+    #[ORM\ManyToOne(inversedBy: 'objectifFormation', cascade: ['persist'])]
     private ?Formations $formations = null;
 
     public function getId(): ?int
